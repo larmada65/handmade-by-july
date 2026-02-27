@@ -75,12 +75,58 @@
       const supabaseUrl = "https://bmzavdormblxxmzeoshi.supabase.co";
       const supabaseAnonKey = "sb_publishable_Wap_flAGqOBtAXZzvi9fYg_Xo96ktf5";
       const supabase = createClient(supabaseUrl, supabaseAnonKey);
+      const storageBucket = "handmade-by-july";
 
       const grid = document.querySelector("[data-fabrics-grid]");
+
+      const placeholderFabricImages = [
+        "https://images.pexels.com/photos/3738080/pexels-photo-3738080.jpeg",
+        "https://images.pexels.com/photos/3965553/pexels-photo-3965553.jpeg",
+        "https://images.pexels.com/photos/3738083/pexels-photo-3738083.jpeg",
+      ];
+
+      let isAdmin = false;
+
+      async function checkAdmin() {
+        const {
+          data: { user },
+        } = await supabase.auth.getUser();
+        isAdmin = !!user;
+      }
+
+      async function uploadImageAndSave(fabricId, file) {
+        const ext = file.name.split(".").pop();
+        const path = `fabrics/${fabricId}-${Date.now()}.${ext}`;
+
+        const { error: uploadError } = await supabase.storage
+          .from(storageBucket)
+          .upload(path, file, { upsert: true });
+
+        if (uploadError) {
+          console.error(uploadError);
+          throw new Error("Upload failed");
+        }
+
+        const {
+          data: { publicUrl },
+        } = supabase.storage.from(storageBucket).getPublicUrl(path);
+
+        const { error: updateError } = await supabase
+          .from("fabrics")
+          .update({ image_url: publicUrl })
+          .eq("id", fabricId);
+
+        if (updateError) {
+          console.error(updateError);
+          throw new Error("Could not save image");
+        }
+      }
 
       async function loadFabrics() {
         if (!grid) return;
         grid.innerHTML = "";
+
+        await checkAdmin();
 
         const { data: fabrics, error } = await supabase
           .from("fabrics")
@@ -101,39 +147,182 @@
           message.textContent =
             "No fabrics are listed yet. Once I add them here, they will appear on this page.";
           grid.appendChild(message);
-          return;
+        } else {
+          fabrics.forEach((fabric, index) => {
+            const card = document.createElement("div");
+            card.className = "fabric-card";
+
+            const imageUrl =
+              fabric.image_url ||
+              placeholderFabricImages[index % placeholderFabricImages.length];
+            if (imageUrl) {
+              const img = document.createElement("img");
+              img.src = imageUrl;
+              img.alt = fabric.name || "Fabric";
+              img.style.width = "100%";
+              img.style.borderRadius = "10px";
+              img.style.marginBottom = "8px";
+              card.appendChild(img);
+            }
+
+            const title = document.createElement("h3");
+            title.textContent = fabric.name;
+
+            const description = document.createElement("p");
+            description.textContent = fabric.description || "";
+
+            const bestFor = document.createElement("p");
+            bestFor.textContent = fabric.best_for || "";
+
+            card.appendChild(title);
+            card.appendChild(description);
+            card.appendChild(bestFor);
+
+            if (Array.isArray(fabric.tags) && fabric.tags.length > 0) {
+              const list = document.createElement("ul");
+              list.className = "pill-list";
+              fabric.tags.forEach((tag) => {
+                const li = document.createElement("li");
+                li.textContent = tag;
+                list.appendChild(li);
+              });
+              card.appendChild(list);
+            }
+
+            if (isAdmin) {
+              const adminBox = document.createElement("div");
+              adminBox.style.marginTop = "10px";
+              adminBox.style.fontSize = "12px";
+
+              const label = document.createElement("p");
+              label.textContent = "Change photo (only visible to you):";
+              adminBox.appendChild(label);
+
+              const fileInput = document.createElement("input");
+              fileInput.type = "file";
+              fileInput.accept = "image/*";
+              fileInput.style.marginBottom = "6px";
+              adminBox.appendChild(fileInput);
+
+              const button = document.createElement("button");
+              button.type = "button";
+              button.className = "btn ghost";
+              button.textContent = "Upload new photo";
+              adminBox.appendChild(button);
+
+              const status = document.createElement("p");
+              status.style.marginTop = "4px";
+              status.style.fontSize = "11px";
+              status.style.color = "var(--ink-soft)";
+              adminBox.appendChild(status);
+
+              button.addEventListener("click", async () => {
+                if (!fileInput.files || fileInput.files.length === 0) {
+                  status.textContent = "Please choose a file first.";
+                  return;
+                }
+                const file = fileInput.files[0];
+                status.textContent = "Uploading…";
+                try {
+                  await uploadImageAndSave(fabric.id, file);
+                  status.textContent = "Saved. Reloading…";
+                  await loadFabrics();
+                } catch (err) {
+                  status.textContent = "I could not save this image.";
+                }
+              });
+
+              card.appendChild(adminBox);
+            }
+
+            grid.appendChild(card);
+          });
         }
 
-        fabrics.forEach((fabric) => {
-          const card = document.createElement("div");
-          card.className = "fabric-card";
+        if (isAdmin) {
+          const addCard = document.createElement("article");
+          addCard.className = "fabric-card";
 
           const title = document.createElement("h3");
-          title.textContent = fabric.name;
+          title.textContent = "Add a new fabric";
+          addCard.appendChild(title);
 
-          const description = document.createElement("p");
-          description.textContent = fabric.description || "";
+          const nameInput = document.createElement("input");
+          nameInput.placeholder = "Name";
+          nameInput.style.marginBottom = "6px";
+          nameInput.style.width = "100%";
+          addCard.appendChild(nameInput);
 
-          const bestFor = document.createElement("p");
-          bestFor.textContent = fabric.best_for || "";
+          const descriptionInput = document.createElement("textarea");
+          descriptionInput.placeholder = "Description";
+          descriptionInput.rows = 2;
+          descriptionInput.style.marginBottom = "6px";
+          descriptionInput.style.width = "100%";
+          addCard.appendChild(descriptionInput);
 
-          card.appendChild(title);
-          card.appendChild(description);
-          card.appendChild(bestFor);
+          const bestForInput = document.createElement("textarea");
+          bestForInput.placeholder = "Best for";
+          bestForInput.rows = 2;
+          bestForInput.style.marginBottom = "6px";
+          bestForInput.style.width = "100%";
+          addCard.appendChild(bestForInput);
 
-          if (Array.isArray(fabric.tags) && fabric.tags.length > 0) {
-            const list = document.createElement("ul");
-            list.className = "pill-list";
-            fabric.tags.forEach((tag) => {
-              const li = document.createElement("li");
-              li.textContent = tag;
-              list.appendChild(li);
-            });
-            card.appendChild(list);
-          }
+          const tagsInput = document.createElement("input");
+          tagsInput.placeholder = "Tags (comma separated)";
+          tagsInput.style.marginBottom = "8px";
+          tagsInput.style.width = "100%";
+          addCard.appendChild(tagsInput);
 
-          grid.appendChild(card);
-        });
+          const saveButton = document.createElement("button");
+          saveButton.type = "button";
+          saveButton.className = "btn primary";
+          saveButton.textContent = "Save fabric";
+          addCard.appendChild(saveButton);
+
+          const status = document.createElement("p");
+          status.style.marginTop = "6px";
+          status.style.fontSize = "11px";
+          status.style.color = "var(--ink-soft)";
+          addCard.appendChild(status);
+
+          saveButton.addEventListener("click", async () => {
+            const name = nameInput.value.trim();
+            if (!name) {
+              status.textContent = "Please add a name.";
+              return;
+            }
+            status.textContent = "Saving…";
+
+            const tagsRaw = tagsInput.value.trim();
+            const tags = tagsRaw
+              ? tagsRaw.split(",").map((t) => t.trim()).filter(Boolean)
+              : [];
+
+            const { error } = await supabase.from("fabrics").insert([
+              {
+                name,
+                description: descriptionInput.value.trim(),
+                best_for: bestForInput.value.trim(),
+                tags,
+              },
+            ]);
+
+            if (error) {
+              console.error(error);
+              status.textContent = "I could not save this fabric.";
+              return;
+            }
+
+            nameInput.value = "";
+            descriptionInput.value = "";
+            bestForInput.value = "";
+            tagsInput.value = "";
+            status.textContent = "Saved. Reloading…";
+            await loadFabrics();
+          });
+
+          grid.appendChild(addCard);
+        }
       }
 
       loadFabrics();

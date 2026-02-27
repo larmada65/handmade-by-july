@@ -58,7 +58,8 @@
                 <h3>Log in</h3>
                 <p>
                   Use the email and password you created in Supabase for this
-                  website.
+                  website. Once you are logged in, you can go to the Products or
+                  Fabrics pages to edit everything directly there.
                 </p>
                 <label class="label" for="login-email">Email</label>
                 <input
@@ -82,122 +83,6 @@
               </div>
             </form>
           </div>
-
-          <section
-            data-admin-panel
-            style="display: none; margin-top: 32px; gap: 20px"
-            class="grid"
-          >
-            <article class="card">
-              <div class="card-body">
-                <h3>Add a product</h3>
-                <form data-product-form>
-                  <label class="label" for="product-name">Name</label>
-                  <input
-                    id="product-name"
-                    required
-                    style="margin-bottom: 8px; width: 100%"
-                  />
-
-                  <label class="label" for="product-short">
-                    Short description
-                  </label>
-                  <textarea
-                    id="product-short"
-                    rows="2"
-                    style="margin-bottom: 8px; width: 100%"
-                  ></textarea>
-
-                  <label class="label" for="product-details">Details</label>
-                  <textarea
-                    id="product-details"
-                    rows="3"
-                    style="margin-bottom: 8px; width: 100%"
-                  ></textarea>
-
-                  <label class="label" for="product-tags">
-                    Tags (comma-separated)
-                  </label>
-                  <input
-                    id="product-tags"
-                    style="margin-bottom: 8px; width: 100%"
-                  />
-
-                  <label class="label" for="product-image">
-                    Image URL (optional)
-                  </label>
-                  <input
-                    id="product-image"
-                    style="margin-bottom: 12px; width: 100%"
-                  />
-
-                  <button type="submit" class="btn primary">
-                    Save product
-                  </button>
-                  <p
-                    data-product-message
-                    style="font-size: 13px; margin-top: 8px; color: var(--ink-soft)"
-                  ></p>
-                </form>
-              </div>
-            </article>
-
-            <article class="card">
-              <div class="card-body">
-                <h3>Add a fabric</h3>
-                <form data-fabric-form>
-                  <label class="label" for="fabric-name">Name</label>
-                  <input
-                    id="fabric-name"
-                    required
-                    style="margin-bottom: 8px; width: 100%"
-                  />
-
-                  <label class="label" for="fabric-description">
-                    Description
-                  </label>
-                  <textarea
-                    id="fabric-description"
-                    rows="2"
-                    style="margin-bottom: 8px; width: 100%"
-                  ></textarea>
-
-                  <label class="label" for="fabric-best-for">
-                    Best for
-                  </label>
-                  <textarea
-                    id="fabric-best-for"
-                    rows="2"
-                    style="margin-bottom: 8px; width: 100%"
-                  ></textarea>
-
-                  <label class="label" for="fabric-tags">
-                    Tags (comma-separated)
-                  </label>
-                  <input
-                    id="fabric-tags"
-                    style="margin-bottom: 8px; width: 100%"
-                  />
-
-                  <label class="label" for="fabric-image">
-                    Image URL (optional)
-                  </label>
-                  <input
-                    id="fabric-image"
-                    style="margin-bottom: 12px; width: 100%"
-                  />
-
-                  <button type="submit" class="btn primary">
-                    Save fabric
-                  </button>
-                  <p
-                    data-fabric-message
-                    style="font-size: 13px; margin-top: 8px; color: var(--ink-soft)"
-                  ></p>
-                </form>
-              </div>
-            </article>
-          </section>
         </div>
       </section>
     </main>
@@ -221,31 +106,15 @@
 
       const loginForm = document.querySelector("[data-login-form]");
       const loginMessage = document.querySelector("[data-login-message]");
-      const adminPanel = document.querySelector("[data-admin-panel]");
-      const authContainer = document.querySelector("[data-auth-container]");
-
-      const productForm = document.querySelector("[data-product-form]");
-      const productMessage = document.querySelector("[data-product-message]");
-
-      const fabricForm = document.querySelector("[data-fabric-form]");
-      const fabricMessage = document.querySelector("[data-fabric-message]");
-
-      function setLoggedInState(loggedIn) {
-        if (!authContainer || !adminPanel) return;
-        if (loggedIn) {
-          authContainer.style.display = "none";
-          adminPanel.style.display = "grid";
-        } else {
-          authContainer.style.display = "";
-          adminPanel.style.display = "none";
-        }
-      }
 
       async function checkSession() {
         const {
           data: { user },
         } = await supabase.auth.getUser();
-        setLoggedInState(!!user);
+        if (user && loginMessage) {
+          loginMessage.textContent =
+            "You are already logged in. You can go to the Products or Fabrics pages to edit everything.";
+        }
       }
 
       if (loginForm) {
@@ -271,102 +140,8 @@
             return;
           }
 
-          loginMessage.textContent = "You are now logged in.";
-          setLoggedInState(true);
-        });
-      }
-
-      if (productForm) {
-        productForm.addEventListener("submit", async (event) => {
-          event.preventDefault();
-          if (!productMessage) return;
-
-          productMessage.textContent = "Saving product…";
-
-          const name = document.getElementById("product-name").value.trim();
-          const short_description = document
-            .getElementById("product-short")
-            .value.trim();
-          const details = document
-            .getElementById("product-details")
-            .value.trim();
-          const tagsRaw = document
-            .getElementById("product-tags")
-            .value.trim();
-          const image_url = document
-            .getElementById("product-image")
-            .value.trim();
-
-          const tags = tagsRaw
-            ? tagsRaw.split(",").map((t) => t.trim()).filter(Boolean)
-            : [];
-
-          const { error } = await supabase.from("products").insert([
-            {
-              name,
-              short_description,
-              details,
-              tags,
-              image_url: image_url || null,
-            },
-          ]);
-
-          if (error) {
-            console.error(error);
-            productMessage.textContent =
-              "I could not save this product right now.";
-            return;
-          }
-
-          productForm.reset();
-          productMessage.textContent = "Product saved.";
-        });
-      }
-
-      if (fabricForm) {
-        fabricForm.addEventListener("submit", async (event) => {
-          event.preventDefault();
-          if (!fabricMessage) return;
-
-          fabricMessage.textContent = "Saving fabric…";
-
-          const name = document.getElementById("fabric-name").value.trim();
-          const description = document
-            .getElementById("fabric-description")
-            .value.trim();
-          const best_for = document
-            .getElementById("fabric-best-for")
-            .value.trim();
-          const tagsRaw = document
-            .getElementById("fabric-tags")
-            .value.trim();
-          const image_url = document
-            .getElementById("fabric-image")
-            .value.trim();
-
-          const tags = tagsRaw
-            ? tagsRaw.split(",").map((t) => t.trim()).filter(Boolean)
-            : [];
-
-          const { error } = await supabase.from("fabrics").insert([
-            {
-              name,
-              description,
-              best_for,
-              tags,
-              image_url: image_url || null,
-            },
-          ]);
-
-          if (error) {
-            console.error(error);
-            fabricMessage.textContent =
-              "I could not save this fabric right now.";
-            return;
-          }
-
-          fabricForm.reset();
-          fabricMessage.textContent = "Fabric saved.";
+          loginMessage.textContent =
+            "You are now logged in. You can go to the Products or Fabrics pages to edit everything.";
         });
       }
 
