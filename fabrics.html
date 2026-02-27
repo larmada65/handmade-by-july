@@ -94,6 +94,29 @@
         isAdmin = !!user;
       }
 
+      function ensureAdminIndicator() {
+        if (document.querySelector("[data-admin-indicator]")) return;
+        const headerShell = document.querySelector(".site-header .shell");
+        if (!headerShell) return;
+
+        const box = document.createElement("div");
+        box.className = "admin-indicator";
+        box.setAttribute("data-admin-indicator", "true");
+        box.textContent = "Logged in as admin";
+
+        const button = document.createElement("button");
+        button.type = "button";
+        button.textContent = "Log out";
+        box.appendChild(button);
+
+        button.addEventListener("click", async () => {
+          await supabase.auth.signOut();
+          window.location.reload();
+        });
+
+        headerShell.appendChild(box);
+      }
+
       async function uploadImageAndSave(fabricId, file) {
         const ext = file.name.split(".").pop();
         const path = `fabrics/${fabricId}-${Date.now()}.${ext}`;
@@ -127,6 +150,10 @@
         grid.innerHTML = "";
 
         await checkAdmin();
+
+        if (isAdmin) {
+          ensureAdminIndicator();
+        }
 
         const { data: fabrics, error } = await supabase
           .from("fabrics")
@@ -273,6 +300,13 @@
           tagsInput.style.width = "100%";
           addCard.appendChild(tagsInput);
 
+          const imageInput = document.createElement("input");
+          imageInput.type = "file";
+          imageInput.accept = "image/*";
+          imageInput.style.marginBottom = "8px";
+          imageInput.style.width = "100%";
+          addCard.appendChild(imageInput);
+
           const saveButton = document.createElement("button");
           saveButton.type = "button";
           saveButton.className = "btn primary";
@@ -298,25 +332,47 @@
               ? tagsRaw.split(",").map((t) => t.trim()).filter(Boolean)
               : [];
 
-            const { error } = await supabase.from("fabrics").insert([
-              {
-                name,
-                description: descriptionInput.value.trim(),
-                best_for: bestForInput.value.trim(),
-                tags,
-              },
-            ]);
+            const file =
+              imageInput.files && imageInput.files.length > 0
+                ? imageInput.files[0]
+                : null;
 
-            if (error) {
+            const { data: newFabric, error } = await supabase
+              .from("fabrics")
+              .insert([
+                {
+                  name,
+                  description: descriptionInput.value.trim(),
+                  best_for: bestForInput.value.trim(),
+                  tags,
+                },
+              ])
+              .select()
+              .single();
+
+            if (error || !newFabric) {
               console.error(error);
               status.textContent = "I could not save this fabric.";
               return;
+            }
+
+            if (file) {
+              try {
+                await uploadImageAndSave(newFabric.id, file);
+              } catch (e) {
+                console.error(e);
+                status.textContent =
+                  "Fabric saved, but I could not save this image.";
+                await loadFabrics();
+                return;
+              }
             }
 
             nameInput.value = "";
             descriptionInput.value = "";
             bestForInput.value = "";
             tagsInput.value = "";
+            imageInput.value = "";
             status.textContent = "Saved. Reloading…";
             await loadFabrics();
           });

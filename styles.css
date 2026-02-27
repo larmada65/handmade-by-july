@@ -111,6 +111,23 @@ main {
   color: var(--ink-soft);
 }
 
+.admin-indicator {
+  font-size: 11px;
+  color: var(--ink-soft);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.admin-indicator button {
+  font-size: 11px;
+  padding: 4px 10px;
+  border-radius: var(--radius-pill);
+  border: 1px solid rgba(196, 150, 72, 0.7);
+  background: rgba(255, 245, 225, 0.9);
+  cursor: pointer;
+}
+
 .nav {
   display: flex;
   align-items: center;

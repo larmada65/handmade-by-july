@@ -107,6 +107,29 @@
       const loginForm = document.querySelector("[data-login-form]");
       const loginMessage = document.querySelector("[data-login-message]");
 
+      function ensureAdminIndicator() {
+        if (document.querySelector("[data-admin-indicator]")) return;
+        const headerShell = document.querySelector(".site-header .shell");
+        if (!headerShell) return;
+
+        const box = document.createElement("div");
+        box.className = "admin-indicator";
+        box.setAttribute("data-admin-indicator", "true");
+        box.textContent = "Logged in as admin";
+
+        const button = document.createElement("button");
+        button.type = "button";
+        button.textContent = "Log out";
+        box.appendChild(button);
+
+        button.addEventListener("click", async () => {
+          await supabase.auth.signOut();
+          window.location.reload();
+        });
+
+        headerShell.appendChild(box);
+      }
+
       async function checkSession() {
         const {
           data: { user },
@@ -114,6 +137,7 @@
         if (user && loginMessage) {
           loginMessage.textContent =
             "You are already logged in. You can go to the Products or Fabrics pages to edit everything.";
+          ensureAdminIndicator();
         }
       }
 
@@ -142,6 +166,7 @@
 
           loginMessage.textContent =
             "You are now logged in. You can go to the Products or Fabrics pages to edit everything.";
+          ensureAdminIndicator();
         });
       }
 
