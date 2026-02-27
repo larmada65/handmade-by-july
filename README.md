@@ -75,3 +75,4 @@ Once the repository is on GitHub:
 
 Vercel will give you a public URL (you can later connect a custom domain if you want). You can place this link on your Instagram profile so people can see your pieces, fabrics, and reviews.
 
+# handmade-by-july
