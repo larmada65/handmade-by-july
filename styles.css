@@ -435,6 +435,73 @@ main {
   border: 1px solid rgba(235, 196, 133, 0.7);
 }
 
+.steps {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 20px;
+  font-size: 12px;
+}
+
+.step-pill {
+  padding: 6px 12px;
+  border-radius: var(--radius-pill);
+  border: 1px solid rgba(214, 169, 107, 0.7);
+  background: rgba(255, 245, 225, 0.9);
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.step-pill span:first-child {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 18px;
+  height: 18px;
+  border-radius: 999px;
+  background: rgba(249, 168, 37, 0.12);
+  border: 1px solid rgba(249, 168, 37, 0.5);
+  font-size: 11px;
+}
+
+.step-pill.active {
+  border-color: var(--accent-deep);
+  background: rgba(255, 242, 214, 0.98);
+}
+
+.step-pill.completed {
+  opacity: 0.8;
+}
+
+.step-actions {
+  display: flex;
+  justify-content: space-between;
+  gap: 10px;
+  margin-top: 16px;
+}
+
+.step-actions .btn[disabled] {
+  opacity: 0.4;
+  cursor: default;
+  box-shadow: none;
+}
+
+.choice-card {
+  cursor: pointer;
+  transition: transform 0.12s ease-out, box-shadow 0.12s ease-out,
+    border-color 0.12s ease-out;
+}
+
+.choice-card:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 14px 32px rgba(245, 148, 51, 0.18);
+}
+
+.choice-card.selected {
+  border-color: var(--accent-deep);
+  box-shadow: 0 14px 32px rgba(245, 148, 51, 0.32);
+}
+
 .fabrics-grid {
   grid-template-columns: repeat(2, minmax(0, 1fr));
 }

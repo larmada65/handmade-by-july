@@ -1,0 +1,535 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Request a piece – Handmade By July</title>
+    <meta
+      name="description"
+      content="Choose a handmade product and fabric, then send a request to July in three gentle steps."
+    />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=EB+Garamond:wght@400;500;600&family=Work+Sans:wght@300;400;500;600&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="./styles.css" />
+  </head>
+  <body>
+    <header class="site-header">
+      <div class="shell">
+        <a href="index.html" class="brand">
+          <img
+            src="./assets/logo.png"
+            alt="Handmade By July logo – hand-painted sun"
+            class="brand-logo"
+          />
+          <div class="brand-text">
+            <span class="brand-title">HANDMADE BY JULY</span>
+            <span class="brand-tagline">Sunny, soft, handmade pieces</span>
+          </div>
+        </a>
+        <button class="nav-toggle" aria-label="Toggle navigation">
+          <span></span><span></span>
+        </button>
+        <nav class="nav">
+          <a href="index.html">Home</a>
+          <a href="products.html">Products</a>
+          <a href="fabrics.html">Fabrics</a>
+          <a href="request.html">Request a piece</a>
+          <a href="index.html#contact">Contact</a>
+        </nav>
+      </div>
+    </header>
+
+    <main>
+      <section class="section page-hero">
+        <div class="shell">
+          <header class="section-heading">
+            <h1 class="page-title">Request a handmade piece</h1>
+            <p>
+              In three small steps, choose a product, pick a fabric you love,
+              and send me your request. I''ll reply by email to confirm
+              details and timing.
+            </p>
+          </header>
+
+          <div class="steps">
+            <div class="step-pill" data-step-pill="1">
+              <span>1</span><span>Choose product</span>
+            </div>
+            <div class="step-pill" data-step-pill="2">
+              <span>2</span><span>Choose fabric</span>
+            </div>
+            <div class="step-pill" data-step-pill="3">
+              <span>3</span><span>Send request</span>
+            </div>
+          </div>
+
+          <div data-step="1">
+            <p style="font-size: 13px; color: var(--ink-soft); margin-bottom: 10px">
+              Step 1 – Tap on the product that feels closest to what you have in
+              mind. You can always start again later.
+            </p>
+            <div class="grid cards" data-step1-grid></div>
+            <div class="step-actions">
+              <button class="btn ghost" type="button" data-step1-reset disabled>
+                Start again
+              </button>
+              <button class="btn primary" type="button" data-step1-next disabled>
+                Continue to fabrics
+              </button>
+            </div>
+          </div>
+
+          <div data-step="2" style="display: none">
+            <p style="font-size: 13px; color: var(--ink-soft); margin-bottom: 10px">
+              Step 2 – Choose the fabric you would like this piece in. You can
+              always mention other ideas in the next step.
+            </p>
+            <div class="grid fabrics-grid" data-step2-grid></div>
+            <div class="step-actions">
+              <button class="btn ghost" type="button" data-step2-back>
+                Back to products
+              </button>
+              <button class="btn primary" type="button" data-step2-next disabled>
+                Continue to request
+              </button>
+            </div>
+          </div>
+
+          <div data-step="3" style="display: none">
+            <p style="font-size: 13px; color: var(--ink-soft); margin-bottom: 10px">
+              Step 3 – Tell me who you are and how to reach you. I''ll use this
+              information to reply with timing, price and any suggestions.
+            </p>
+
+            <article class="card" style="margin-bottom: 14px">
+              <div class="card-body">
+                <p class="label" style="margin-bottom: 4px">Your selection</p>
+                <p
+                  style="margin: 0 0 4px; font-weight: 500"
+                  data-summary-product
+                ></p>
+                <p
+                  style="margin: 0 0 4px; font-size: 13px"
+                  data-summary-fabric
+                ></p>
+              </div>
+            </article>
+
+            <article class="card">
+              <div class="card-body">
+                <form data-step3-form>
+                  <div
+                    style="
+                      display: flex;
+                      gap: 8px;
+                      margin-bottom: 8px;
+                      flex-wrap: wrap;
+                    "
+                  >
+                    <input
+                      type="text"
+                      placeholder="First name"
+                      required
+                      data-first-name
+                      style="flex: 1; min-width: 140px"
+                    />
+                    <input
+                      type="text"
+                      placeholder="Last name"
+                      required
+                      data-last-name
+                      style="flex: 1; min-width: 140px"
+                    />
+                  </div>
+
+                  <input
+                    type="email"
+                    placeholder="Email"
+                    required
+                    data-email
+                    style="margin-bottom: 8px; width: 100%"
+                  />
+
+                  <textarea
+                    rows="3"
+                    data-message
+                    placeholder="Optional message — for example your favourite colors, or any timing constraints."
+                    style="margin-bottom: 8px; width: 100%"
+                  ></textarea>
+
+                  <div class="step-actions">
+                    <button
+                      class="btn ghost"
+                      type="button"
+                      data-step3-back
+                    >
+                      Back to fabrics
+                    </button>
+                    <button class="btn primary" type="submit">
+                      Send my request
+                    </button>
+                  </div>
+                  <p
+                    data-step3-status
+                    style="margin-top: 8px; font-size: 12px; color: var(--ink-soft)"
+                  ></p>
+                </form>
+              </div>
+            </article>
+
+            <button
+              class="btn ghost"
+              type="button"
+              style="margin-top: 12px"
+              data-start-over
+            >
+              Start again from step 1
+            </button>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <footer class="site-footer">
+      <div class="shell footer-inner">
+        <p>Handmade By July ☀</p>
+        <p class="footer-small">
+          Handmade with love in New York, with lots of sun.
+        </p>
+      </div>
+    </footer>
+
+    <script src="./script.js"></script>
+    <script type="module">
+      import { createClient } from "https://esm.sh/@supabase/supabase-js";
+
+      const supabaseUrl = "https://bmzavdormblxxmzeoshi.supabase.co";
+      const supabaseAnonKey = "sb_publishable_Wap_flAGqOBtAXZzvi9fYg_Xo96ktf5";
+      const supabase = createClient(supabaseUrl, supabaseAnonKey);
+
+      const placeholderProductImages = [
+        "https://images.pexels.com/photos/3965545/pexels-photo-3965545.jpeg",
+        "https://images.pexels.com/photos/3738087/pexels-photo-3738087.jpeg",
+        "https://images.pexels.com/photos/3738081/pexels-photo-3738081.jpeg",
+      ];
+
+      const placeholderFabricImages = [
+        "https://images.pexels.com/photos/3738080/pexels-photo-3738080.jpeg",
+        "https://images.pexels.com/photos/3965553/pexels-photo-3965553.jpeg",
+        "https://images.pexels.com/photos/3738083/pexels-photo-3738083.jpeg",
+      ];
+
+      let products = [];
+      let fabrics = [];
+      let selectedProduct = null;
+      let selectedFabric = null;
+      let currentStep = 1;
+
+      const stepPills = document.querySelectorAll("[data-step-pill]");
+      const step1Grid = document.querySelector("[data-step1-grid]");
+      const step2Grid = document.querySelector("[data-step2-grid]");
+      const step1Next = document.querySelector("[data-step1-next]");
+      const step1Reset = document.querySelector("[data-step1-reset]");
+      const step2Back = document.querySelector("[data-step2-back]");
+      const step2Next = document.querySelector("[data-step2-next]");
+      const step3Form = document.querySelector("[data-step3-form]");
+      const step3Back = document.querySelector("[data-step3-back]");
+      const startOverButton = document.querySelector("[data-start-over]");
+      const step3Status = document.querySelector("[data-step3-status]");
+      const summaryProduct = document.querySelector("[data-summary-product]");
+      const summaryFabric = document.querySelector("[data-summary-fabric]");
+
+      const stepContainers = Array.from(
+        document.querySelectorAll("[data-step]")
+      );
+
+      function updateStepsUI() {
+        stepPills.forEach((pill) => {
+          const step = Number(pill.getAttribute("data-step-pill"));
+          pill.classList.remove("active", "completed");
+          if (step === currentStep) {
+            pill.classList.add("active");
+          } else if (step < currentStep) {
+            pill.classList.add("completed");
+          }
+        });
+
+        stepContainers.forEach((container) => {
+          const step = Number(container.getAttribute("data-step"));
+          container.style.display = step === currentStep ? "block" : "none";
+        });
+      }
+
+      function renderStep1() {
+        if (!step1Grid) return;
+        step1Grid.innerHTML = "";
+
+        products.forEach((product, index) => {
+          const card = document.createElement("article");
+          card.className = "card choice-card";
+          card.setAttribute("data-product-id", product.id);
+
+          const imageUrl =
+            product.image_url ||
+            placeholderProductImages[index % placeholderProductImages.length];
+          if (imageUrl) {
+            const img = document.createElement("img");
+            img.src = imageUrl;
+            img.alt = product.name || "Product";
+            img.className = "card-photo";
+            card.appendChild(img);
+          }
+
+          const body = document.createElement("div");
+          body.className = "card-body";
+
+          const title = document.createElement("h3");
+          title.textContent = product.name;
+          body.appendChild(title);
+
+          if (product.short_description) {
+            const short = document.createElement("p");
+            short.textContent = product.short_description;
+            body.appendChild(short);
+          }
+
+          card.appendChild(body);
+
+          card.addEventListener("click", () => {
+            selectedProduct = product;
+            Array.from(step1Grid.children).forEach((child) =>
+              child.classList.remove("selected")
+            );
+            card.classList.add("selected");
+            if (step1Next) step1Next.disabled = false;
+            if (step1Reset) step1Reset.disabled = false;
+          });
+
+          step1Grid.appendChild(card);
+        });
+
+        if (step1Next) {
+          step1Next.disabled = !selectedProduct;
+        }
+        if (step1Reset) {
+          step1Reset.disabled = !selectedProduct;
+        }
+      }
+
+      function renderStep2() {
+        if (!step2Grid) return;
+        step2Grid.innerHTML = "";
+
+        fabrics.forEach((fabric, index) => {
+          const card = document.createElement("article");
+          card.className = "fabric-card choice-card";
+          card.setAttribute("data-fabric-id", fabric.id);
+
+          const imageUrl =
+            fabric.image_url ||
+            placeholderFabricImages[index % placeholderFabricImages.length];
+          if (imageUrl) {
+            const img = document.createElement("img");
+            img.src = imageUrl;
+            img.alt = fabric.name || "Fabric";
+            img.style.width = "100%";
+            img.style.borderRadius = "10px";
+            img.style.marginBottom = "8px";
+            card.appendChild(img);
+          }
+
+          const title = document.createElement("h3");
+          title.textContent = fabric.name;
+          card.appendChild(title);
+
+          if (fabric.description) {
+            const desc = document.createElement("p");
+            desc.textContent = fabric.description;
+            card.appendChild(desc);
+          }
+
+          if (fabric.best_for) {
+            const best = document.createElement("p");
+            best.textContent = fabric.best_for;
+            card.appendChild(best);
+          }
+
+          card.addEventListener("click", () => {
+            selectedFabric = fabric;
+            Array.from(step2Grid.children).forEach((child) =>
+              child.classList.remove("selected")
+            );
+            card.classList.add("selected");
+            if (step2Next) step2Next.disabled = false;
+          });
+
+          step2Grid.appendChild(card);
+        });
+
+        if (step2Next) {
+          step2Next.disabled = !selectedFabric;
+        }
+      }
+
+      function updateSummary() {
+        if (summaryProduct) {
+          summaryProduct.textContent = selectedProduct
+            ? selectedProduct.name
+            : "";
+        }
+        if (summaryFabric) {
+          summaryFabric.textContent = selectedFabric
+            ? `In fabric: ${selectedFabric.name}`
+            : "No fabric selected yet.";
+        }
+      }
+
+      function goToStep(step) {
+        currentStep = step;
+        updateStepsUI();
+        if (currentStep === 1) {
+          renderStep1();
+        } else if (currentStep === 2) {
+          renderStep2();
+        } else if (currentStep === 3) {
+          updateSummary();
+        }
+      }
+
+      function resetAll() {
+        selectedProduct = null;
+        selectedFabric = null;
+        if (step3Status) {
+          step3Status.textContent = "";
+        }
+        if (step3Form) {
+          step3Form.reset();
+        }
+        goToStep(1);
+      }
+
+      async function loadData() {
+        const [{ data: productsData }, { data: fabricsData }] =
+          await Promise.all([
+            supabase
+              .from("products")
+              .select("*")
+              .order("created_at", { ascending: false }),
+            supabase
+              .from("fabrics")
+              .select("*")
+              .order("created_at", { ascending: false }),
+          ]);
+
+        products = productsData || [];
+        fabrics = fabricsData || [];
+
+        renderStep1();
+        updateStepsUI();
+      }
+
+      if (step1Next) {
+        step1Next.addEventListener("click", () => {
+          if (!selectedProduct) return;
+          goToStep(2);
+        });
+      }
+
+      if (step1Reset) {
+        step1Reset.addEventListener("click", () => {
+          selectedProduct = null;
+          selectedFabric = null;
+          resetAll();
+        });
+      }
+
+      if (step2Back) {
+        step2Back.addEventListener("click", () => {
+          goToStep(1);
+        });
+      }
+
+      if (step2Next) {
+        step2Next.addEventListener("click", () => {
+          if (!selectedFabric) return;
+          goToStep(3);
+        });
+      }
+
+      if (step3Back) {
+        step3Back.addEventListener("click", () => {
+          goToStep(2);
+        });
+      }
+
+      if (startOverButton) {
+        startOverButton.addEventListener("click", () => {
+          resetAll();
+        });
+      }
+
+      if (step3Form) {
+        step3Form.addEventListener("submit", async (event) => {
+          event.preventDefault();
+          if (!step3Status) return;
+
+          if (!selectedProduct) {
+            step3Status.textContent =
+              "Please choose a product first before sending your request.";
+            goToStep(1);
+            return;
+          }
+
+          const firstNameInput = step3Form.querySelector("[data-first-name]");
+          const lastNameInput = step3Form.querySelector("[data-last-name]");
+          const emailInput = step3Form.querySelector("[data-email]");
+          const messageInput = step3Form.querySelector("[data-message]");
+
+          const first = firstNameInput.value.trim();
+          const last = lastNameInput.value.trim();
+          const email = emailInput.value.trim();
+          const message = messageInput.value.trim();
+
+          if (!first || !last || !email) {
+            step3Status.textContent =
+              "Please add your name and email so I can reply.";
+            return;
+          }
+
+          step3Status.textContent = "Sending your request…";
+
+          const { error } = await supabase
+            .from("product_interest_requests")
+            .insert([
+              {
+                product_id: selectedProduct.id,
+                fabric_id: selectedFabric ? selectedFabric.id : null,
+                first_name: first,
+                last_name: last,
+                email,
+                message,
+              },
+            ]);
+
+          if (error) {
+            console.error(error);
+            step3Status.textContent =
+              "I could not send your request right now. Please try again a bit later.";
+            return;
+          }
+
+          step3Status.textContent =
+            "Thank you. I received your request and will get back to you by email.";
+          step3Form.reset();
+        });
+      }
+
+      loadData();
+    </script>
+  </body>
+</html>
+

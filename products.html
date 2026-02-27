@@ -37,6 +37,7 @@
           <a href="index.html">Home</a>
           <a href="products.html">Products</a>
           <a href="fabrics.html">Fabrics</a>
+          <a href="request.html">Request a piece</a>
           <a href="index.html#contact">Contact</a>
         </nav>
       </div>
@@ -85,30 +86,12 @@
       ];
 
       let isAdmin = false;
-      let fabricsList = [];
-      let fabricsLoaded = false;
 
       async function checkAdmin() {
         const {
           data: { user },
         } = await supabase.auth.getUser();
         isAdmin = !!user;
-      }
-
-      async function loadFabricsForInterest() {
-        if (fabricsLoaded) return fabricsList;
-        const { data, error } = await supabase
-          .from("fabrics")
-          .select("id, name")
-          .order("name", { ascending: true });
-        if (error) {
-          console.error("Error loading fabrics for interest form", error);
-          fabricsList = [];
-        } else {
-          fabricsList = data || [];
-        }
-        fabricsLoaded = true;
-        return fabricsList;
       }
 
       function ensureAdminIndicator() {
@@ -236,141 +219,6 @@
               });
               body.appendChild(list);
             }
-
-            const interestBox = document.createElement("div");
-            interestBox.style.marginTop = "10px";
-            interestBox.style.fontSize = "12px";
-
-            const interestButton = document.createElement("button");
-            interestButton.type = "button";
-            interestButton.className = "btn ghost";
-            interestButton.textContent = "I'm interested in this piece";
-            interestBox.appendChild(interestButton);
-
-            const interestForm = document.createElement("div");
-            interestForm.style.display = "none";
-            interestForm.style.marginTop = "8px";
-            interestForm.style.borderTop = "1px solid rgba(220, 185, 135, 0.5)";
-            interestForm.style.paddingTop = "8px";
-
-            const nameRow = document.createElement("div");
-            nameRow.style.display = "flex";
-            nameRow.style.gap = "6px";
-            nameRow.style.marginBottom = "6px";
-
-            const firstName = document.createElement("input");
-            firstName.placeholder = "First name";
-            firstName.style.flex = "1";
-            const lastName = document.createElement("input");
-            lastName.placeholder = "Last name";
-            lastName.style.flex = "1";
-            nameRow.appendChild(firstName);
-            nameRow.appendChild(lastName);
-            interestForm.appendChild(nameRow);
-
-            const emailInput = document.createElement("input");
-            emailInput.type = "email";
-            emailInput.placeholder = "Email";
-            emailInput.style.marginBottom = "6px";
-            emailInput.style.width = "100%";
-            interestForm.appendChild(emailInput);
-
-            const fabricSelect = document.createElement("select");
-            fabricSelect.style.marginBottom = "6px";
-            fabricSelect.style.width = "100%";
-            interestForm.appendChild(fabricSelect);
-
-            const messageInput = document.createElement("textarea");
-            messageInput.rows = 2;
-            messageInput.placeholder =
-              "Optional message (for example, colors you like)";
-            messageInput.style.marginBottom = "6px";
-            messageInput.style.width = "100%";
-            interestForm.appendChild(messageInput);
-
-            const sendButton = document.createElement("button");
-            sendButton.type = "button";
-            sendButton.className = "btn primary";
-            sendButton.textContent = "Send my interest";
-            interestForm.appendChild(sendButton);
-
-            const interestStatus = document.createElement("p");
-            interestStatus.style.marginTop = "6px";
-            interestStatus.style.fontSize = "11px";
-            interestStatus.style.color = "var(--ink-soft)";
-            interestForm.appendChild(interestStatus);
-
-            let interestInitialized = false;
-
-            interestButton.addEventListener("click", async () => {
-              if (!interestInitialized) {
-                interestStatus.textContent = "";
-                fabricSelect.innerHTML = "";
-                const fabrics = await loadFabricsForInterest();
-                const placeholder = document.createElement("option");
-                placeholder.value = "";
-                placeholder.textContent = fabrics.length
-                  ? "Choose a fabric (optional)"
-                  : "No fabrics listed yet";
-                fabricSelect.appendChild(placeholder);
-                fabrics.forEach((fabric) => {
-                  const opt = document.createElement("option");
-                  opt.value = fabric.id;
-                  opt.textContent = fabric.name;
-                  fabricSelect.appendChild(opt);
-                });
-                interestInitialized = true;
-              }
-
-              interestForm.style.display =
-                interestForm.style.display === "none" ? "block" : "none";
-            });
-
-            sendButton.addEventListener("click", async () => {
-              interestStatus.textContent = "";
-              const first = firstName.value.trim();
-              const last = lastName.value.trim();
-              const email = emailInput.value.trim();
-
-              if (!first || !last || !email) {
-                interestStatus.textContent =
-                  "Please add your name and email so I can reply.";
-                return;
-              }
-
-              interestStatus.textContent = "Sending…";
-
-              const { error } = await supabase
-                .from("product_interest_requests")
-                .insert([
-                  {
-                    product_id: product.id,
-                    fabric_id: fabricSelect.value || null,
-                    first_name: first,
-                    last_name: last,
-                    email,
-                    message: messageInput.value.trim(),
-                  },
-                ]);
-
-              if (error) {
-                console.error(error);
-                interestStatus.textContent =
-                  "I could not send this interest right now. Please try again a bit later.";
-                return;
-              }
-
-              firstName.value = "";
-              lastName.value = "";
-              emailInput.value = "";
-              fabricSelect.value = "";
-              messageInput.value = "";
-              interestStatus.textContent =
-                "Thank you. I received your message and will get back to you.";
-            });
-
-            interestBox.appendChild(interestForm);
-            body.appendChild(interestBox);
 
             if (isAdmin) {
               const adminBox = document.createElement("div");
